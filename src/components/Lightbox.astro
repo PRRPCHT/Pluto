@@ -1,0 +1,178 @@
+---
+// Lightbox component for image viewing with keyboard navigation
+interface Props {
+  images: Array<{ path: string; name: string }>;
+}
+
+const { images } = Astro.props;
+---
+
+<div id="lightbox" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-sm">
+  <div class="relative w-full h-full flex flex-col">
+    <!-- Close button -->
+    <button
+      id="lightbox-close"
+      class="absolute top-4 right-4 z-10 btn btn-circle btn-ghost text-white hover:bg-white/20"
+      aria-label="Close lightbox"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+
+    <!-- Image container -->
+    <div class="flex-1 flex items-center justify-center p-2 sm:p-4 overflow-hidden min-h-0">
+      <img
+        id="lightbox-image"
+        src=""
+        alt=""
+        class="max-w-full max-h-full w-auto h-auto object-contain"
+      />
+    </div>
+
+    <!-- Image name and navigation -->
+    <div class="bg-black/50 backdrop-blur-md p-3 flex items-center justify-between gap-4">
+      <!-- Previous button -->
+      <button
+        id="lightbox-prev"
+        class="btn btn-circle btn-ghost text-white hover:bg-white/20 flex-shrink-0"
+        aria-label="Previous image"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+
+      <!-- Image name and counter on same line -->
+      <div class="flex-1 text-center overflow-hidden">
+        <p class="text-white font-medium text-base truncate">
+          <span id="lightbox-name"></span>
+          <span class="text-white/60 text-sm mx-3">•</span>
+          <span id="lightbox-counter" class="text-white/60 text-sm"></span>
+        </p>
+      </div>
+
+      <!-- Next button -->
+      <button
+        id="lightbox-next"
+        class="btn btn-circle btn-ghost text-white hover:bg-white/20 flex-shrink-0"
+        aria-label="Next image"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Keyboard hints (fade out after a few seconds) -->
+    <div id="keyboard-hints" class="absolute bottom-24 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-md px-4 py-2 rounded-lg text-white/80 text-sm transition-opacity duration-300">
+      Use arrow keys ← → to navigate, ESC to close
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ images }}>
+  let currentIndex = 0;
+  let isOpen = false;
+
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImage = document.getElementById('lightbox-image');
+  const lightboxName = document.getElementById('lightbox-name');
+  const lightboxCounter = document.getElementById('lightbox-counter');
+  const closeBtn = document.getElementById('lightbox-close');
+  const prevBtn = document.getElementById('lightbox-prev');
+  const nextBtn = document.getElementById('lightbox-next');
+  const keyboardHints = document.getElementById('keyboard-hints');
+
+  function openLightbox(index) {
+    currentIndex = index;
+    isOpen = true;
+    updateLightbox();
+    lightbox.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    
+    // Show keyboard hints and fade them out
+    keyboardHints.style.opacity = '1';
+    setTimeout(() => {
+      keyboardHints.style.opacity = '0';
+    }, 3000);
+  }
+
+  function closeLightbox() {
+    isOpen = false;
+    lightbox.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  function updateLightbox() {
+    const image = images[currentIndex];
+    lightboxImage.src = image.path;
+    lightboxImage.alt = image.name;
+    lightboxName.textContent = image.name;
+    lightboxCounter.textContent = `${currentIndex + 1} / ${images.length}`;
+    
+    // Update button states
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.disabled = currentIndex === images.length - 1;
+    prevBtn.style.opacity = currentIndex === 0 ? '0.3' : '1';
+    nextBtn.style.opacity = currentIndex === images.length - 1 ? '0.3' : '1';
+  }
+
+  function showPrevious() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateLightbox();
+    }
+  }
+
+  function showNext() {
+    if (currentIndex < images.length - 1) {
+      currentIndex++;
+      updateLightbox();
+    }
+  }
+
+  // Event listeners
+  closeBtn.addEventListener('click', closeLightbox);
+  prevBtn.addEventListener('click', showPrevious);
+  nextBtn.addEventListener('click', showNext);
+
+  // Close on background click
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) {
+      closeLightbox();
+    }
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (!isOpen) return;
+
+    switch(e.key) {
+      case 'Escape':
+        closeLightbox();
+        break;
+      case 'ArrowLeft':
+        showPrevious();
+        break;
+      case 'ArrowRight':
+        showNext();
+        break;
+    }
+  });
+
+  // Make gallery images clickable
+  document.querySelectorAll('[data-lightbox-trigger]').forEach((trigger, index) => {
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      openLightbox(index);
+    });
+  });
+</script>
+
+<style>
+  #keyboard-hints {
+    opacity: 1;
+  }
+</style>
+

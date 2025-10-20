@@ -1,0 +1,170 @@
+import * as fs from 'fs';
+import * as path from 'path';
+
+export interface GalleryItem {
+	name: string;
+	path: string;
+	isFolder: boolean;
+	thumbnail?: string;
+}
+
+export interface GalleryData {
+	currentPath: string;
+	folders: GalleryItem[];
+	images: GalleryItem[];
+	parentPath: string | null;
+	breadcrumbs: { name: string; path: string }[];
+}
+
+const GALLERY_ROOT = 'public/galleries';
+const IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
+
+/**
+ * Check if a file is an image based on its extension
+ */
+function isImage(filename: string): boolean {
+	const ext = path.extname(filename).toLowerCase();
+	return IMAGE_EXTENSIONS.includes(ext);
+}
+
+/**
+ * Get the first image in a folder (for thumbnail)
+ */
+function getFirstImage(folderPath: string): string | undefined {
+	try {
+		const items = fs.readdirSync(folderPath);
+		for (const item of items) {
+			const itemPath = path.join(folderPath, item);
+			const stat = fs.statSync(itemPath);
+
+			if (stat.isFile() && isImage(item)) {
+				return item;
+			}
+
+			// Recursively check subfolders
+			if (stat.isDirectory()) {
+				const subImage = getFirstImage(itemPath);
+				if (subImage) {
+					return path.join(item, subImage);
+				}
+			}
+		}
+	} catch (error) {
+		console.error(`Error reading folder ${folderPath}:`, error);
+	}
+	return undefined;
+}
+
+/**
+ * Get all possible gallery paths for static generation
+ */
+export function getAllGalleryPaths(basePath: string = GALLERY_ROOT): string[] {
+	const paths: string[] = ['/']; // Root gallery path
+
+	function scanDirectory(dirPath: string, relativePath: string = '') {
+		try {
+			const items = fs.readdirSync(dirPath);
+
+			for (const item of items) {
+				const fullPath = path.join(dirPath, item);
+				const stat = fs.statSync(fullPath);
+
+				if (stat.isDirectory()) {
+					const newRelativePath = relativePath ? `${relativePath}/${item}` : item;
+					paths.push(`/${newRelativePath}`);
+					scanDirectory(fullPath, newRelativePath);
+				}
+			}
+		} catch (error) {
+			console.error(`Error scanning directory ${dirPath}:`, error);
+		}
+	}
+
+	if (fs.existsSync(basePath)) {
+		scanDirectory(basePath);
+	}
+
+	return paths;
+}
+
+/**
+ * Get gallery data for a specific path
+ */
+export function getGalleryData(galleryPath: string): GalleryData {
+	// Clean up the path
+	const cleanPath = galleryPath === '/' ? '' : galleryPath.replace(/^\/|\/$/g, '');
+	const fullPath = path.join(GALLERY_ROOT, cleanPath);
+
+	const folders: GalleryItem[] = [];
+	const images: GalleryItem[] = [];
+
+	// Read directory contents
+	if (fs.existsSync(fullPath)) {
+		try {
+			const items = fs.readdirSync(fullPath);
+
+			for (const item of items) {
+				const itemPath = path.join(fullPath, item);
+				const stat = fs.statSync(itemPath);
+
+				if (stat.isDirectory()) {
+					const thumbnail = getFirstImage(itemPath);
+					const relativePath = cleanPath ? `${cleanPath}/${item}` : item;
+
+					folders.push({
+						name: item,
+						path: `/${relativePath}`,
+						isFolder: true,
+						thumbnail: thumbnail ? `/galleries/${relativePath}/${thumbnail}` : undefined
+					});
+				} else if (stat.isFile() && isImage(item)) {
+					const relativePath = cleanPath ? `${cleanPath}/${item}` : item;
+
+					images.push({
+						name: item,
+						path: `/galleries/${relativePath}`,
+						isFolder: false
+					});
+				}
+			}
+		} catch (error) {
+			console.error(`Error reading gallery path ${fullPath}:`, error);
+		}
+	}
+
+	// Sort folders and images alphabetically
+	folders.sort((a, b) => a.name.localeCompare(b.name));
+	images.sort((a, b) => a.name.localeCompare(b.name));
+
+	// Calculate parent path
+	let parentPath: string | null = null;
+	if (cleanPath) {
+		const pathParts = cleanPath.split('/');
+		pathParts.pop();
+		parentPath = pathParts.length > 0 ? `/${pathParts.join('/')}` : '/';
+	}
+
+	// Generate breadcrumbs
+	const breadcrumbs: { name: string; path: string }[] = [{ name: 'Gallery', path: '/' }];
+
+	if (cleanPath) {
+		const pathParts = cleanPath.split('/');
+		let currentPath = '';
+
+		for (const part of pathParts) {
+			currentPath += (currentPath ? '/' : '') + part;
+			breadcrumbs.push({
+				name: part,
+				path: `/${currentPath}`
+			});
+		}
+	}
+
+	return {
+		currentPath: galleryPath,
+		folders,
+		images,
+		parentPath,
+		breadcrumbs
+	};
+}
