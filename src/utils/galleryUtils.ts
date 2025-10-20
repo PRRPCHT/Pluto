@@ -17,6 +17,10 @@ export interface GalleryData {
 	breadcrumbs: { name: string; path: string }[];
 }
 
+export interface GalleryConfig {
+	gallery_name: string;
+}
+
 const GALLERY_ROOT = 'public/galleries';
 const IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
 
@@ -86,6 +90,18 @@ export function getAllGalleryPaths(basePath: string = GALLERY_ROOT): string[] {
 	}
 
 	return paths;
+}
+
+/**
+ * Get the gallery config
+ */
+export function getGalleryConfig(): GalleryConfig {
+	try {
+		return JSON.parse(fs.readFileSync('pluto-config.json', 'utf8')) as GalleryConfig;
+	} catch (error) {
+		console.error(`Error reading gallery config file pluto-config.json}:`, error);
+		return { gallery_name: 'Pluto' } as GalleryConfig;
+	}
 }
 
 /**
