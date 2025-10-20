@@ -143,7 +143,7 @@ export function getGalleryData(galleryPath: string): GalleryData {
 						path: `/galleries/${relativePath}`,
 						isFolder: false
 					});
-				} else if (stat.isFile() && item.toLowerCase() === 'gallery.txt') {
+				} else if (stat.isFile() && item.toLowerCase() === 'gallery.md') {
 					const relativePath = cleanPath ? `${cleanPath}/${item}` : item;
 					description = fs.readFileSync(itemPath, 'utf8');
 				}

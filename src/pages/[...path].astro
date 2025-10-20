@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Lightbox from '../components/Lightbox.astro';
 import { getAllGalleryPaths, getGalleryData } from '../utils/galleryUtils';
+import { marked } from 'marked';
 
 export async function getStaticPaths() {
   const paths = getAllGalleryPaths();
@@ -16,6 +17,9 @@ export async function getStaticPaths() {
 const { path } = Astro.params;
 const galleryPath = path ? `/${path}` : '/';
 const galleryData = getGalleryData(galleryPath);
+
+// Convert markdown to HTML if description exists
+const descriptionHtml = galleryData.description ? marked(galleryData.description) : '';
 ---
 
 <Layout title={`Gallery ${galleryData.currentPath === '/' ? '' : `- ${galleryData.breadcrumbs[galleryData.breadcrumbs.length - 1].name}`}`}>
@@ -121,8 +125,8 @@ const galleryData = getGalleryData(galleryPath);
 
     <!-- Description Section -->
     {galleryData.description && (
-      <div class="mb-6 w-full">
-        <p class="text-sm">{galleryData.description}</p>
+      <div class="mb-6 w-full prose prose-sm max-w-none">
+        <div set:html={descriptionHtml} />
       </div>
     )}
 
