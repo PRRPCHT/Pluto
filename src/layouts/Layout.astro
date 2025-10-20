@@ -13,8 +13,13 @@ import "../styles/global.css";
 	<body>
 		<div class="navbar bg-base-100 shadow-sm">
 			<div class="flex-1">
-				<a class="btn btn-ghost text-xl px-2">Pierre's Photos</a>
+				<a class="btn btn-ghost text-xl px-0 md:px-2" href="/">Pluto</a>
 			</div>
+			<!-- Breadcrumbs in navbar (visible only on lg+ screens) -->
+			<div class="hidden lg:flex flex-none">
+				<slot name="breadcrumbs-navbar" />
+			</div>
+			<div class="flex-1 hidden lg:block"></div>
 			<div class="flex-none mx-2">
 				<label class="swap swap-rotate">
 				<!-- this hidden checkbox controls the state -->

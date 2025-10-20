@@ -10,6 +10,7 @@ export interface GalleryItem {
 
 export interface GalleryData {
 	currentPath: string;
+	description: string;
 	folders: GalleryItem[];
 	images: GalleryItem[];
 	parentPath: string | null;
@@ -97,6 +98,7 @@ export function getGalleryData(galleryPath: string): GalleryData {
 
 	const folders: GalleryItem[] = [];
 	const images: GalleryItem[] = [];
+	let description = '';
 
 	// Read directory contents
 	if (fs.existsSync(fullPath)) {
@@ -125,6 +127,9 @@ export function getGalleryData(galleryPath: string): GalleryData {
 						path: `/galleries/${relativePath}`,
 						isFolder: false
 					});
+				} else if (stat.isFile() && item.toLowerCase() === 'gallery.txt') {
+					const relativePath = cleanPath ? `${cleanPath}/${item}` : item;
+					description = fs.readFileSync(itemPath, 'utf8');
 				}
 			}
 		} catch (error) {
@@ -162,6 +167,7 @@ export function getGalleryData(galleryPath: string): GalleryData {
 
 	return {
 		currentPath: galleryPath,
+		description,
 		folders,
 		images,
 		parentPath,
