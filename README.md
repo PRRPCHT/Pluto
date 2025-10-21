@@ -1,4 +1,4 @@
-![](assets/20251021_111530_pluto.webp)
+![](public/pluto.webp)
 
 # Pluto
 
