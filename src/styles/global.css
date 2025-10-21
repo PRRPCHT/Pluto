@@ -6,7 +6,6 @@
 /* Markdown prose styles */
 .prose {
 	color: inherit;
-	max-width: 65ch;
 }
 
 .prose > * + * {

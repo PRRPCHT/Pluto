@@ -96,10 +96,10 @@ const descriptionHtml = galleryData.description ? marked(galleryData.description
     {galleryData.folders.length > 0 && (
       <div class="mb-12">
         {/* <h2 class="text-2xl font-bold mb-4">Folders</h2> */}
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+        <div class="flex flex-wrap gap-4 flex-row justify-center">
           {galleryData.folders.reverse().map(folder => (
-            <a href={`${folder.path}`} class="card bg-base-200 hover:bg-base-300 transition-colors shadow-lg hover:shadow-xl">
-              <figure class="aspect-video md:aspect-square bg-base-300 relative overflow-hidden">
+            <a href={`${folder.path}`} class="card bg-base-200 hover:bg-base-300 transition-colors shadow-lg hover:shadow-xl w-full sm:w-64">
+              <figure class="aspect-video sm:aspect-square bg-base-300 relative overflow-hidden">
                 {folder.thumbnail ? (
                   <img 
                     src={folder.thumbnail} 
@@ -114,8 +114,9 @@ const descriptionHtml = galleryData.description ? marked(galleryData.description
                   </div>
                 )}
               </figure>
-              <div class="card-body p-4">
-                <h3 class="card-title text-sm">{folder.name}</h3>
+              <div class="card-body py-2 px-1">
+                <h3 class="font-bold text-sm text-center">{folder.name}</h3>
+                <div class="text-sm text-gray-500 text-center">{folder.count ? `${folder.count} photo${folder.count > 1 ? 's' : ''}` : 'No photos'}</div>
               </div>
             </a>
           ))}
@@ -125,7 +126,7 @@ const descriptionHtml = galleryData.description ? marked(galleryData.description
 
     <!-- Description Section -->
     {galleryData.description && (
-      <div class="mb-6 w-full prose prose-sm max-w-none">
+      <div class="mb-6 prose prose-sm max-w-3xl mx-auto">
         <div set:html={descriptionHtml} />
       </div>
     )}
@@ -134,7 +135,7 @@ const descriptionHtml = galleryData.description ? marked(galleryData.description
     {galleryData.images.length > 0 && (
       <div>
         {/* <h2 class="text-2xl font-bold mb-4">Photos</h2> */}
-        <div class="flex flex-wrap gap-2 flex-row">
+        <div class="flex flex-wrap gap-2 flex-row justify-center">
           {galleryData.images.map((image, index) => (
             <div class="relative group cursor-pointer overflow-hidden rounded-xs shadow-lg hover:shadow-xl transition-shadow">
               <a href={image.path} data-lightbox-trigger data-image-index={index}>

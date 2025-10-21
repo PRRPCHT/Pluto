@@ -6,6 +6,7 @@ export interface GalleryItem {
 	path: string;
 	isFolder: boolean;
 	thumbnail?: string;
+	count?: number;
 }
 
 export interface GalleryData {
@@ -15,6 +16,7 @@ export interface GalleryData {
 	images: GalleryItem[];
 	parentPath: string | null;
 	breadcrumbs: { name: string; path: string }[];
+	imagesCount: number;
 }
 
 export interface GalleryConfig {
@@ -58,6 +60,23 @@ function getFirstImage(folderPath: string): string | undefined {
 		console.error(`Error reading folder ${folderPath}:`, error);
 	}
 	return undefined;
+}
+
+/**
+ * Get the number of images in a folder
+ */
+function getImageCount(folderPath: string): number {
+	try {
+		const items = fs.readdirSync(folderPath);
+		const directImageCount = items.filter((item) => isImage(item)).length;
+		const recursiveImageCount = items
+			.filter((item) => fs.statSync(path.join(folderPath, item)).isDirectory())
+			.reduce((acc, item) => acc + getImageCount(path.join(folderPath, item)), 0);
+		return directImageCount + recursiveImageCount;
+	} catch (error) {
+		console.error(`Error reading folder ${folderPath}:`, error);
+	}
+	return 0;
 }
 
 /**
@@ -115,7 +134,7 @@ export function getGalleryData(galleryPath: string): GalleryData {
 	const folders: GalleryItem[] = [];
 	const images: GalleryItem[] = [];
 	let description = '';
-
+	let imagesCount = 0;
 	// Read directory contents
 	if (fs.existsSync(fullPath)) {
 		try {
@@ -128,12 +147,15 @@ export function getGalleryData(galleryPath: string): GalleryData {
 				if (stat.isDirectory()) {
 					const thumbnail = getFirstImage(itemPath);
 					const relativePath = cleanPath ? `${cleanPath}/${item}` : item;
+					const count = getImageCount(itemPath);
+					imagesCount += count || 0;
 
 					folders.push({
 						name: item,
 						path: `/${relativePath}`,
 						isFolder: true,
-						thumbnail: thumbnail ? `/galleries/${relativePath}/${thumbnail}` : undefined
+						thumbnail: thumbnail ? `/galleries/${relativePath}/${thumbnail}` : undefined,
+						count: count || 0
 					});
 				} else if (stat.isFile() && isImage(item)) {
 					const relativePath = cleanPath ? `${cleanPath}/${item}` : item;
@@ -156,6 +178,7 @@ export function getGalleryData(galleryPath: string): GalleryData {
 	// Sort folders and images alphabetically
 	folders.sort((a, b) => a.name.localeCompare(b.name));
 	images.sort((a, b) => a.name.localeCompare(b.name));
+	imagesCount = images.length;
 
 	// Calculate parent path
 	let parentPath: string | null = null;
@@ -187,6 +210,7 @@ export function getGalleryData(galleryPath: string): GalleryData {
 		folders,
 		images,
 		parentPath,
-		breadcrumbs
+		breadcrumbs,
+		imagesCount
 	};
 }
