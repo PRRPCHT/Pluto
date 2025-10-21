@@ -31,6 +31,12 @@ const withBase = (path: string) => {
 
 // Convert markdown to HTML if description exists
 const descriptionHtml = galleryData.description ? marked(galleryData.description) : '';
+
+// Transform images to include base URL for the Lightbox
+const imagesWithBase = galleryData.images.map(image => ({
+  ...image,
+  path: withBase(image.path)
+}));
 ---
 
 <Layout title={`Gallery ${galleryData.currentPath === '/' ? '' : `- ${galleryData.breadcrumbs[galleryData.breadcrumbs.length - 1].name}`}`}>
@@ -190,7 +196,7 @@ const descriptionHtml = galleryData.description ? marked(galleryData.description
 
   <!-- Lightbox -->
   {galleryData.images.length > 0 && (
-    <Lightbox images={galleryData.images} />
+    <Lightbox images={imagesWithBase} />
   )}
 </Layout>
 
