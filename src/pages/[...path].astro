@@ -31,11 +31,7 @@ const descriptionHtml = galleryData.description ? marked(galleryData.description
         &larr;
       </a>
     )}
-    {galleryData.parentPath == null && (
-      <span class="me-4 opacity-20">
-        &larr;  
-      </span>
-    )}
+
     {galleryData.breadcrumbs.map((crumb, index) => (
       <>
         {index === galleryData.breadcrumbs.length - 1 ? (
