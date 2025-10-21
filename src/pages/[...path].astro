@@ -120,6 +120,9 @@ const descriptionHtml = galleryData.description ? marked(galleryData.description
         </div>
       </div>
     )}
+  {galleryData.images.length > 0 && galleryData.folders.length > 0 && (
+    <div class="divider w-80 mx-auto mb-8 divide-gray-700"></div>
+  )}
 
     <!-- Description Section if on top -->
     {galleryConfig.description_position === DescriptionPosition.Top && galleryData.description && (
