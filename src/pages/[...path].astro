@@ -19,6 +19,16 @@ const galleryPath = path ? `/${path}` : '/';
 const galleryData = getGalleryData(galleryPath);
 const galleryConfig = getGalleryConfig();
 
+// Get base URL from Astro environment
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, ''); // Remove trailing slash
+
+// Helper function to add base URL to paths
+const withBase = (path: string) => {
+  if (!path) return baseUrl || '/';
+  if (path === '/') return baseUrl || '/';
+  return `${baseUrl}${path}`;
+};
+
 // Convert markdown to HTML if description exists
 const descriptionHtml = galleryData.description ? marked(galleryData.description) : '';
 ---
@@ -27,7 +37,7 @@ const descriptionHtml = galleryData.description ? marked(galleryData.description
   <!-- Breadcrumbs for navbar (visible on lg+ screens only) -->
   <nav slot="breadcrumbs-navbar" class="flex flex-wrap items-center">
     {galleryData.parentPath !== null && (
-      <a href={`${galleryData.parentPath}`} class="link hover:text-primary no-underline me-4">
+      <a href={withBase(galleryData.parentPath)} class="link hover:text-primary no-underline me-4">
         &larr;
       </a>
     )}
@@ -38,7 +48,7 @@ const descriptionHtml = galleryData.description ? marked(galleryData.description
           <span class="font-semibold">{crumb.name}</span>
         ) : (
           <>
-            <a href={`${crumb.path}`} class="link hover:text-primary no-underline">
+            <a href={withBase(crumb.path)} class="link hover:text-primary no-underline">
               {crumb.name}
             </a>
             <span class="mx-2 opacity-40">/</span>
@@ -52,7 +62,7 @@ const descriptionHtml = galleryData.description ? marked(galleryData.description
     <!-- Breadcrumbs (visible only on smaller screens) -->
     <nav class="flex lg:hidden flex-wrap items-center mb-6">
       {galleryData.parentPath !== null && (
-        <a href={`${galleryData.parentPath}`} class="link hover:text-primary no-underline me-4">
+        <a href={withBase(galleryData.parentPath)} class="link hover:text-primary no-underline me-4">
           &larr;
         </a>
       )}
@@ -67,7 +77,7 @@ const descriptionHtml = galleryData.description ? marked(galleryData.description
             <span class="font-semibold">{crumb.name}</span>
           ) : (
             <>
-              <a href={`${crumb.path}`} class="link hover:text-primary no-underline">
+              <a href={withBase(crumb.path)} class="link hover:text-primary no-underline">
                 {crumb.name}
               </a>
               <span class="mx-2 opacity-40">/</span>
@@ -95,11 +105,11 @@ const descriptionHtml = galleryData.description ? marked(galleryData.description
         {/* <h2 class="text-2xl font-bold mb-4">Folders</h2> */}
         <div class="flex flex-wrap gap-4 flex-row justify-center">
           {galleryData.folders.reverse().map(folder => (
-            <a href={`${folder.path}`} class="card bg-base-200 hover:bg-base-300 transition-colors shadow-lg hover:shadow-xl w-full sm:w-64">
+            <a href={withBase(folder.path)} class="card bg-base-200 hover:bg-base-300 transition-colors shadow-lg hover:shadow-xl w-full sm:w-64">
               <figure class="aspect-video sm:aspect-square bg-base-300 relative overflow-hidden">
                 {folder.thumbnail ? (
                   <img 
-                    src={folder.thumbnail} 
+                    src={withBase(folder.thumbnail)} 
                     alt={folder.name}
                     class="w-full h-full object-cover"
                   />
@@ -138,9 +148,9 @@ const descriptionHtml = galleryData.description ? marked(galleryData.description
         galleryConfig.gallery_style === GalleryStyle.Large ? 'flex-col max-w-3xl mx-auto gap-4' : 'flex-row gap-2']}>
         {galleryData.images.map((image, index) => (
           <div class="relative group cursor-pointer overflow-hidden rounded-xs shadow-lg hover:shadow-xl transition-shadow" class:list={[galleryConfig.gallery_style === GalleryStyle.Large ? 'md:max-w-3xl md:mx-auto' : '']}>
-            <a href={image.path} data-lightbox-trigger data-image-index={index}>
+            <a href={withBase(image.path)} data-lightbox-trigger data-image-index={index}>
               <img 
-                src={image.path} 
+                src={withBase(image.path)} 
                 alt={image.name}
                 class="w-full h-auto  object-cover group-hover:scale-110 transition-transform duration-300"
                 class:list={[galleryConfig.gallery_style === GalleryStyle.Large ? 'md:max-w-3xl md:mx-auto' : 'md:h-64 md:w-auto']}

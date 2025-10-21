@@ -3,5 +3,6 @@
 	"gallery_alignment": "center",
 	"gallery_style": "thumbnails",
 	"description_position": "top",
-	"description_alignment": "center"
+	"description_alignment": "center",
+	"base_path": "/"
 }

@@ -1,20 +1,28 @@
 ---
 import "../styles/global.css";
 import { getGalleryConfig } from "../utils/galleryUtils";
+
+// Get base URL from Astro environment
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, ''); // Remove trailing slash
+const withBase = (path: string) => {
+  if (!path) return baseUrl || '/';
+  if (path === '/') return baseUrl || '/';
+  return `${baseUrl}${path}`;
+};
 ---
 <!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/webp" href="/pluto.webp" />
+		<link rel="icon" type="image/webp" href={withBase('/pluto.webp')} />
 		<meta name="generator" content={Astro.generator} />
 		<title>{getGalleryConfig().gallery_name}</title>
 	</head>
 	<body>
 		<div class="navbar bg-base-100 shadow-sm">
 			<div class="flex-1">
-				<a class="btn btn-ghost text-xl px-0 md:px-2" href="/">{getGalleryConfig().gallery_name}</a>
+				<a class="btn btn-ghost text-xl px-0 md:px-2" href={withBase('/')}>{getGalleryConfig().gallery_name}</a>
 			</div>
 			<!-- Breadcrumbs in navbar (visible only on lg+ screens) -->
 			<div class="hidden lg:flex flex-none">

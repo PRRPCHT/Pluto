@@ -40,6 +40,7 @@ export interface GalleryConfig {
 	gallery_style: GalleryStyle;
 	description_position: DescriptionPosition;
 	description_alignment: GalleryElementAlignment;
+	base_path?: string;
 }
 
 const GALLERY_ROOT = 'public/galleries';
@@ -149,6 +150,7 @@ export function getGalleryConfig(): GalleryConfig {
 
 /**
  * Get gallery data for a specific path
+ * Note: Paths returned are relative and should be prefixed with BASE_URL in the frontend
  */
 export function getGalleryData(galleryPath: string): GalleryData {
 	// Clean up the path

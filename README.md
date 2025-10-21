@@ -25,6 +25,7 @@ The `pluto-config.json` file helps customizing your gallery.
 - `gallery_style`: defines the style of the gallery: thumbnails vs large images. Possible values: `large`, `thumbnails`.
 - `description_position`: defines the position of the description, above or below the images.
 - `description_alignment`: defines the alignment of the description in the gallery. Possible values: `left`, `center`, `right`.
+- `base_path` (optional): defines the base path when deploying to a subdirectory (e.g., `/photos`). If your site is hosted at `https://example.com/photos`, set this to `/photos`. Default is `/` (root).
 
 #### Set the descriptions (optional)
 

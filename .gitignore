@@ -24,4 +24,5 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-assets/*
+public/.htpasswd
+public/.htaccess
