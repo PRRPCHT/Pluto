@@ -19,8 +19,21 @@ export interface GalleryData {
 	imagesCount: number;
 }
 
+export enum GalleryElementAlignment {
+	Center = 'center',
+	Left = 'left',
+	Right = 'right'
+}
+export enum DescriptionPosition {
+	Top = 'top',
+	Bottom = 'bottom'
+}
+
 export interface GalleryConfig {
 	gallery_name: string;
+	gallery_alignment: GalleryElementAlignment;
+	description_position: DescriptionPosition;
+	description_alignment: GalleryElementAlignment;
 }
 
 const GALLERY_ROOT = 'public/galleries';
@@ -119,7 +132,12 @@ export function getGalleryConfig(): GalleryConfig {
 		return JSON.parse(fs.readFileSync('pluto-config.json', 'utf8')) as GalleryConfig;
 	} catch (error) {
 		console.error(`Error reading gallery config file pluto-config.json}:`, error);
-		return { gallery_name: 'Pluto' } as GalleryConfig;
+		return {
+			gallery_name: 'Pluto',
+			gallery_alignment: GalleryElementAlignment.Center,
+			description_position: DescriptionPosition.Top,
+			description_alignment: GalleryElementAlignment.Center
+		} as GalleryConfig;
 	}
 }
 
