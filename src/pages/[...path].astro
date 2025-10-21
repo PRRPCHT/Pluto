@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Lightbox from '../components/Lightbox.astro';
-import { getAllGalleryPaths, getGalleryData, getGalleryConfig, DescriptionPosition, GalleryElementAlignment } from '../utils/galleryUtils';
+import { getAllGalleryPaths, getGalleryData, getGalleryConfig, DescriptionPosition, GalleryElementAlignment, GalleryStyle } from '../utils/galleryUtils';
 import { marked } from 'marked';
 
 export async function getStaticPaths() {
@@ -91,7 +91,7 @@ const descriptionHtml = galleryData.description ? marked(galleryData.description
 
     <!-- Folders Section -->
     {galleryData.folders.length > 0 && (
-      <div class="mb-12">
+      <div class="mb-8">
         {/* <h2 class="text-2xl font-bold mb-4">Folders</h2> */}
         <div class="flex flex-wrap gap-4 flex-row justify-center">
           {galleryData.folders.reverse().map(folder => (
@@ -133,21 +133,24 @@ const descriptionHtml = galleryData.description ? marked(galleryData.description
 
     <!-- Images Section -->
     {galleryData.images.length > 0 && (
-      <div class="flex flex-wrap gap-2 flex-row mb-8" class:list={[galleryConfig.gallery_alignment === GalleryElementAlignment.Center ? 'justify-center' : galleryConfig.gallery_alignment === GalleryElementAlignment.Left ? 'justify-start' : 'justify-end']}>
+      <div class="flex flex-wrap mb-8" 
+      class:list={[galleryConfig.gallery_alignment === GalleryElementAlignment.Center ? 'justify-center' : galleryConfig.gallery_alignment === GalleryElementAlignment.Left ? 'justify-start' : 'justify-end',
+        galleryConfig.gallery_style === GalleryStyle.Large ? 'flex-col max-w-3xl mx-auto gap-4' : 'flex-row gap-2']}>
         {galleryData.images.map((image, index) => (
-          <div class="relative group cursor-pointer overflow-hidden rounded-xs shadow-lg hover:shadow-xl transition-shadow">
+          <div class="relative group cursor-pointer overflow-hidden rounded-xs shadow-lg hover:shadow-xl transition-shadow" class:list={[galleryConfig.gallery_style === GalleryStyle.Large ? 'md:max-w-3xl md:mx-auto' : '']}>
             <a href={image.path} data-lightbox-trigger data-image-index={index}>
               <img 
                 src={image.path} 
                 alt={image.name}
-                class="w-full h-auto md:h-64 md:w-auto object-cover group-hover:scale-110 transition-transform duration-300"
+                class="w-full h-auto  object-cover group-hover:scale-110 transition-transform duration-300"
+                class:list={[galleryConfig.gallery_style === GalleryStyle.Large ? 'md:max-w-3xl md:mx-auto' : 'md:h-64 md:w-auto']}
                 loading="lazy"
               />
               <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex flex-col items-center justify-center pointer-events-none">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
                 </svg>
-                <p class="text-white text-sm mt-2 px-2 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 max-w-full truncate">
+                <p class="text-white text-sm mt-2 px-2 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 max-w-3xl truncate">
                   {image.name}
                 </p>
               </div>

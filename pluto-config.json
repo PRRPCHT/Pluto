@@ -1,6 +1,7 @@
 {
 	"gallery_name": "Pluto",
 	"gallery_alignment": "center",
+	"gallery_style": "thumbnails",
 	"description_position": "top",
 	"description_alignment": "center"
 }

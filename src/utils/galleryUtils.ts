@@ -29,9 +29,15 @@ export enum DescriptionPosition {
 	Bottom = 'bottom'
 }
 
+export enum GalleryStyle {
+	Large = 'large',
+	Thumbnails = 'thumbnails'
+}
+
 export interface GalleryConfig {
 	gallery_name: string;
 	gallery_alignment: GalleryElementAlignment;
+	gallery_style: GalleryStyle;
 	description_position: DescriptionPosition;
 	description_alignment: GalleryElementAlignment;
 }
