@@ -1,12 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import sharp from 'sharp';
+import * as Utils from '../src/utils/utils';
 
-const GALLERY_ROOT = 'public/galleries';
 const THUMBNAIL_ROOT = 'public/thumbnails';
 const THUMBNAIL_WIDTH = 400;
 const THUMBNAIL_HEIGHT = 400;
-const IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
 
 /**
  * Check if a file is an image based on its extension
@@ -15,7 +14,7 @@ const IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
  */
 function isImage(filename: string): boolean {
 	const ext = path.extname(filename).toLowerCase();
-	return IMAGE_EXTENSIONS.includes(ext);
+	return Utils.IMAGE_EXTENSIONS.includes(ext);
 }
 
 /**
@@ -115,7 +114,7 @@ async function scanAndGenerateThumbnails(
 					if (shouldGenerate) {
 						await generateThumbnail(sourceImagePath, thumbnailPath);
 					} else {
-						console.log(`⊘ Skipped (up-to-date): ${thumbnailPath}`);
+						console.log(`Skipped (up-to-date): ${thumbnailPath}`);
 					}
 				}
 
@@ -141,11 +140,11 @@ async function main() {
 		fs.mkdirSync(THUMBNAIL_ROOT, { recursive: true });
 	}
 
-	if (fs.existsSync(GALLERY_ROOT)) {
-		await scanAndGenerateThumbnails(GALLERY_ROOT);
+	if (fs.existsSync(Utils.GALLERY_ROOT)) {
+		await scanAndGenerateThumbnails(Utils.GALLERY_ROOT);
 		console.log('Thumbnail generation complete!');
 	} else {
-		console.error(`Gallery root "${GALLERY_ROOT}" does not exist.`);
+		console.error(`Gallery root "${Utils.GALLERY_ROOT}" does not exist.`);
 		process.exit(1);
 	}
 }

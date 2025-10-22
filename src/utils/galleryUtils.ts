@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as Utils from './utils';
 
 export interface GalleryItem {
 	name: string;
@@ -43,9 +44,6 @@ export interface GalleryConfig {
 	base_path?: string;
 }
 
-const GALLERY_ROOT = 'public/galleries';
-const IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
-
 /**
  * Check if a file is an image based on its extension
  * @param filename - The name of the file to check
@@ -53,7 +51,7 @@ const IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
  */
 function isImage(filename: string): boolean {
 	const ext = path.extname(filename).toLowerCase();
-	return IMAGE_EXTENSIONS.includes(ext);
+	return Utils.IMAGE_EXTENSIONS.includes(ext);
 }
 
 /**
@@ -110,7 +108,7 @@ function getImageCount(folderPath: string): number {
  * @param basePath - The base path to the gallery
  * @returns An array of all possible gallery paths
  */
-export function getAllGalleryPaths(basePath: string = GALLERY_ROOT): string[] {
+export function getAllGalleryPaths(basePath: string = Utils.GALLERY_ROOT): string[] {
 	const paths: string[] = ['/']; // Root gallery path
 
 	function scanDirectory(dirPath: string, relativePath: string = '') {
@@ -166,7 +164,7 @@ export function getGalleryConfig(): GalleryConfig {
 export function getGalleryData(galleryPath: string): GalleryData {
 	// Clean up the path
 	const cleanPath = galleryPath === '/' ? '' : galleryPath.replace(/^\/|\/$/g, '');
-	const fullPath = path.join(GALLERY_ROOT, cleanPath);
+	const fullPath = path.join(Utils.GALLERY_ROOT, cleanPath);
 
 	const folders: GalleryItem[] = [];
 	const images: GalleryItem[] = [];
