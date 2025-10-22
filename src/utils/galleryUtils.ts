@@ -48,6 +48,8 @@ const IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
 
 /**
  * Check if a file is an image based on its extension
+ * @param filename - The name of the file to check
+ * @returns True if the file is an image, false otherwise
  */
 function isImage(filename: string): boolean {
 	const ext = path.extname(filename).toLowerCase();
@@ -56,6 +58,8 @@ function isImage(filename: string): boolean {
 
 /**
  * Get the first image in a folder (for thumbnail)
+ * @param folderPath - The path to the folder to search
+ * @returns The path to the first image in the folder, or undefined if no image is found
  */
 function getFirstImage(folderPath: string): string | undefined {
 	try {
@@ -84,6 +88,8 @@ function getFirstImage(folderPath: string): string | undefined {
 
 /**
  * Get the number of images in a folder
+ * @param folderPath - The path to the folder to search
+ * @returns The number of images in the folder
  */
 function getImageCount(folderPath: string): number {
 	try {
@@ -101,6 +107,8 @@ function getImageCount(folderPath: string): number {
 
 /**
  * Get all possible gallery paths for static generation
+ * @param basePath - The base path to the gallery
+ * @returns An array of all possible gallery paths
  */
 export function getAllGalleryPaths(basePath: string = GALLERY_ROOT): string[] {
 	const paths: string[] = ['/']; // Root gallery path
@@ -133,6 +141,7 @@ export function getAllGalleryPaths(basePath: string = GALLERY_ROOT): string[] {
 
 /**
  * Get the gallery config
+ * @returns The gallery config
  */
 export function getGalleryConfig(): GalleryConfig {
 	try {
@@ -151,6 +160,8 @@ export function getGalleryConfig(): GalleryConfig {
 /**
  * Get gallery data for a specific path
  * Note: Paths returned are relative and should be prefixed with BASE_URL in the frontend
+ * @param galleryPath - The path to the gallery
+ * @returns The gallery data
  */
 export function getGalleryData(galleryPath: string): GalleryData {
 	// Clean up the path
@@ -171,16 +182,29 @@ export function getGalleryData(galleryPath: string): GalleryData {
 				const stat = fs.statSync(itemPath);
 
 				if (stat.isDirectory()) {
-					const thumbnail = getFirstImage(itemPath);
 					const relativePath = cleanPath ? `${cleanPath}/${item}` : item;
 					const count = getImageCount(itemPath);
 					imagesCount += count || 0;
+
+					// Check if thumbnail exists (generated during build)
+					const thumbnailPath = `/thumbnails/${relativePath}.jpg`;
+					const thumbnailFullPath = path.join('public', 'thumbnails', `${relativePath}.jpg`);
+					const hasThumbnail = fs.existsSync(thumbnailFullPath);
+
+					// Fallback to first image if no thumbnail exists
+					let thumbnail: string | undefined;
+					if (hasThumbnail) {
+						thumbnail = thumbnailPath;
+					} else {
+						const firstImage = getFirstImage(itemPath);
+						thumbnail = firstImage ? `/galleries/${relativePath}/${firstImage}` : undefined;
+					}
 
 					folders.push({
 						name: item,
 						path: `/${relativePath}`,
 						isFolder: true,
-						thumbnail: thumbnail ? `/galleries/${relativePath}/${thumbnail}` : undefined,
+						thumbnail,
 						count: count || 0
 					});
 				} else if (stat.isFile() && isImage(item)) {

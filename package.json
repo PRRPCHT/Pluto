@@ -4,9 +4,10 @@
 	"version": "0.0.1",
 	"scripts": {
 		"dev": "astro dev",
-		"build": "astro build",
+		"build": "npm run generate-thumbnails && astro build",
 		"preview": "astro preview",
-		"astro": "astro"
+		"astro": "astro",
+		"generate-thumbnails": "tsx scripts/generate-thumbnails.ts"
 	},
 	"dependencies": {
 		"@tailwindcss/vite": "4.1.15",
@@ -14,5 +15,10 @@
 		"daisyui": "^5.3.7",
 		"marked": "^16.4.1",
 		"tailwindcss": "4.1.15"
+	},
+	"devDependencies": {
+		"@types/node": "^24.9.1",
+		"sharp": "^0.34.4",
+		"tsx": "^4.19.2"
 	}
 }
