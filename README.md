@@ -27,6 +27,8 @@ The `pluto-config.json` file helps customizing your gallery.
 - `description_alignment`: defines the alignment of the description in the gallery. Possible values: `left`, `center`, `right`.
 - `base_path` (optional): defines the base path when deploying to a subdirectory (e.g., `/photos`). If your site is hosted at `https://example.com/photos`, set this to `/photos`. Default is `/` (root).
 
+You can also define the base colors of the web app in the `src/styles/global.css` file. Both the `light` and `dark` themes allow to change the main background (`--color-base-100`), the alternative backgrounds (`--color-base-200` & `--color-base-300`) as the font color (`--color-base-content`).
+
 #### Set the descriptions (optional)
 
 Each folder can contain a `gallery.md` file. Using [markdown](https://www.markdownguide.org/) you can describe what's displayed in the folder. If no description is provided, nothing is displayed.
@@ -48,11 +50,20 @@ Pluto **doesn't** provide any security feature e.g. login, rights, groups... It'
    sophie:$2y$10$R99Z9kj0GmriTQZ/M4i0Z.Kd8BbcSItiwGb1Kf2k7pp8nOQ.EZNAO
    ```
 2. Create a `.htaccess` file in the `public` folder that will restrict all access to your gallery:
+
    ```
+   # Enable basic authentication
    AuthType Basic
-   AuthName "Restricted Galleries"
-   AuthUserFile /.htpasswd
+   AuthName "Restricted Access"
+   AuthUserFile /path/to/.htpasswd
+
+   # Require valid user to access any file in this folder or subfolders
    Require valid-user
+
+   # Optionally, prevent direct access to .ht* files
+   <FilesMatch "^\.ht">
+       Require all denied
+   </FilesMatch>
    ```
 
 This way your images won't be reachable by anyone.
