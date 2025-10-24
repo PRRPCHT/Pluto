@@ -2,7 +2,37 @@
 @plugin "daisyui" {
 	themes: light --default, dark --prefersdark;
 }
+@plugin "daisyui/theme" {
+	name: 'light';
+	default: true;
+	color-scheme: light;
 
+	--color-base-100: #f0f0f0;
+	--color-base-200: #e5e5e5;
+	--color-base-300: #d4d4d4;
+	--color-base-content: #1d232a;
+	/* Default values
+	--color-base-100: #f0f0f0;
+	--color-base-200: #e5e5e5;
+	--color-base-300: #d4d4d4;
+	--color-base-content: #1d232a; */
+}
+
+@plugin "daisyui/theme" {
+	name: 'dark';
+	prefersdark: true;
+	color-scheme: dark;
+
+	--color-base-100: #1d232a;
+	--color-base-200: #191e24;
+	--color-base-300: #15191e;
+	--color-base-content: #f8f8f8;
+	/* Default values
+	--color-base-100: #1d232a;
+	--color-base-200: #191e24;
+	--color-base-300: #15191e;
+	--color-base-content: #f8f8f8; */
+}
 /* Markdown prose styles */
 .prose {
 	color: inherit;
